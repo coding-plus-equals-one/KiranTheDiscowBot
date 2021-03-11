@@ -2,8 +2,6 @@
 
 from discord.ext import commands
 import os
-import shlex
-import collections
 
 bot = commands.Bot(command_prefix='!')
 
