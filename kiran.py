@@ -52,4 +52,8 @@ async def clear(ctx):
     tasks[ctx.guild].clear()
     await ctx.send('Cleared tasks')
 
+@bot.command()
+async def say(ctx, *, arg):
+    await ctx.send(arg)
+
 bot.run(os.environ['KIRAN_TOKEN'])
