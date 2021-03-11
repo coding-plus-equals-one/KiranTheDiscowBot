@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 
+import discord
 from discord.ext import commands
 import os
 
-bot = commands.Bot(command_prefix='!')
+intents = discord.Intents.default()
+intents.members = True
+
+bot = commands.Bot(intents=intents, command_prefix='!')
 
 @bot.event
 async def on_ready():
@@ -21,7 +25,7 @@ async def task(ctx):
         tasks[ctx.guild] = []
 
 @task.command()
-async def add(ctx, *, arg):
+async def add(ctx, *, arg: commands.clean_content):
     tasks[ctx.guild].append(arg)
     await ctx.send('Added task ' + arg)
     if len(ctx.message.mentions) > 0:
