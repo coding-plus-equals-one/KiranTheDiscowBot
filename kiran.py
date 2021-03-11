@@ -1,54 +1,53 @@
 #!/usr/bin/env python3
 
-import discord
+from discord.ext import commands
 import os
 import shlex
 import collections
 
-client = discord.Client()
+bot = commands.Bot(command_prefix='!')
 
-@client.event
+@bot.event
 async def on_ready():
-    print('We have logged in as {0.user}'.format(client))
+    print('Logged in as {0.user}'.format(bot))
 
 tasks = {}
 
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
+@bot.command()
+async def hello(ctx):
+    await ctx.send(f'Hello, {ctx.author.display_name}!')
 
-    # print(message.content)
+@bot.group()
+async def task(ctx):
+    if ctx.guild not in tasks:
+        tasks[ctx.guild] = []
 
+@task.command()
+async def add(ctx, *, arg):
+    tasks[ctx.guild].append(arg)
+    await ctx.send('Added task ' + arg)
+    if len(ctx.message.mentions) > 0:
+        await ctx.send(' '.join([user.mention for user in ctx.message.mentions]) + ' You have a new task!')
+
+@task.command()
+async def list(ctx):
+    if len(tasks[ctx.guild]) == 0:
+        await ctx.send('There are no tasks. Yay!')
+    else:
+        await ctx.send('\n'.join([f'{i + 1}. {task}' for i, task in zip(range(len(tasks[ctx.guild])), tasks[ctx.guild])]))
+
+@task.command()
+async def remove(ctx, task_index: int):
+    task_index -= 1
     try:
-        if message.content.startswith('!'):
-            args = collections.deque(shlex.split(message.clean_content[1:]))
-            command = args.popleft()
-            if command == 'hello':
-                await message.channel.send(f'Hello, {message.author.display_name}!')
-            elif command == 'task':
-                if message.guild not in tasks:
-                    tasks[message.guild] = []
-                subcommand = args.popleft()
-                if subcommand == 'add':
-                    task_name = args.popleft()
-                    tasks[message.guild].append(task_name)
-                    await message.channel.send('Added task ' + task_name)
-                    if len(message.mentions) > 0:
-                        await message.channel.send(' '.join([user.mention for user in message.mentions]) + ' You have a new task!')
-                elif subcommand == 'list':
-                    if len(tasks[message.guild]) == 0:
-                        await message.channel.send('There are no tasks. Yay!')
-                    else:
-                        await message.channel.send('\n'.join([f'{i + 1}. {task}' for i, task in zip(range(len(tasks[message.guild])), tasks[message.guild])]))
-                elif subcommand == 'remove':
-                    task_index = int(args.popleft()) - 1
-                    task = tasks[message.guild].pop(task_index)
-                    await message.channel.send('Deleted task ' + task)
-                elif subcommand == 'clear':
-                    tasks[message.guild].clear()
-                    await message.channel.send('Cleared tasks')
-    except:
-        pass
+        task = tasks[ctx.guild].pop(task_index)
+        await ctx.send('Deleted task ' + task)
+    except IndexError:
+        await ctx.send('No such task')
 
-client.run(os.environ['KIRAN_TOKEN'])
+@task.command()
+async def clear(ctx):
+    tasks[ctx.guild].clear()
+    await ctx.send('Cleared tasks')
+
+bot.run(os.environ['KIRAN_TOKEN'])
