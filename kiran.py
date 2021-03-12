@@ -59,5 +59,5 @@ async def say(ctx, *, arg):
 @bot.command(help='Send dancing cow GIF')
 async def dance(ctx):
     await ctx.send(file=discord.File('dance.gif'))
-brief='Send dancing cow GIF'
+
 bot.run(os.environ['KIRAN_TOKEN'])
