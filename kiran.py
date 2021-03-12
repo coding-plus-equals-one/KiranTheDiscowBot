@@ -56,4 +56,8 @@ async def clear(ctx):
 async def say(ctx, *, arg):
     await ctx.send(arg)
 
+@bot.command()
+async def dance(ctx):
+    await ctx.send(file=discord.File('dance.gif'))
+
 bot.run(os.environ['KIRAN_TOKEN'])
