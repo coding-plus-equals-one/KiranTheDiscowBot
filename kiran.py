@@ -69,12 +69,13 @@ async def dance(ctx):
 @bot.command(help='Evaluate a SymPy expression')
 async def sp(ctx, *, arg):
     try:
-        await ctx.send('```\n{}\n```'.format(
-            sympy.pretty(sympy_parser.parse_expr(arg, transformations=sympy_parser.standard_transformations
-                                                 + (sympy_parser.implicit_multiplication_application,
-                                                    sympy_parser.rationalize,
-                                                    sympy_parser.convert_xor)))))
+        result = sympy_parser.parse_expr(arg, transformations=sympy_parser.standard_transformations
+                                         + (sympy_parser.implicit_multiplication_application,
+                                            sympy_parser.rationalize,
+                                            sympy_parser.convert_xor))
     except:
         await ctx.send('```\n{}\n```'.format(traceback.format_exc()))
+    else:
+        await ctx.send('```\n{}\n```'.format(sympy.pretty(result)))
 
 bot.run(os.environ['KIRAN_TOKEN'])
