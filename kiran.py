@@ -67,7 +67,7 @@ async def dance(ctx):
     await ctx.send(file=discord.File('dance.gif'))
 
 @bot.command(help='Evaluate a SymPy expression')
-async def sympy(ctx, *, arg):
+async def sp(ctx, *, arg):
     try:
         await ctx.send('```\n{}\n```'.format(
             sympy.pretty(sympy_parser.parse_expr(arg, transformations=sympy_parser.standard_transformations
@@ -75,6 +75,6 @@ async def sympy(ctx, *, arg):
                                                     sympy_parser.rationalize,
                                                     sympy_parser.convert_xor)))))
     except:
-        await ctx.send(traceback.format_exc())
+        await ctx.send('```\n{}\n```'.format(traceback.format_exc()))
 
 bot.run(os.environ['KIRAN_TOKEN'])
