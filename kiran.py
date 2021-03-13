@@ -31,9 +31,9 @@ async def task(ctx):
         tasks[ctx.guild] = []
 
 @task.command(help='Add new task')
-async def add(ctx, *, arg: commands.clean_content):
-    tasks[ctx.guild].append(arg)
-    await ctx.send('Added task ' + arg)
+async def add(ctx, *, new_task: commands.clean_content):
+    tasks[ctx.guild].append(new_task)
+    await ctx.send('Added task ' + new_task)
     if len(ctx.message.mentions) > 0:
         await ctx.send(' '.join([user.mention for user in ctx.message.mentions]) + ' You have a new task!')
 
@@ -58,18 +58,18 @@ async def clear(ctx):
     tasks[ctx.guild].clear()
     await ctx.send('Cleared tasks')
 
-@bot.command(help='Echo the arguments')
-async def say(ctx, *, arg):
-    await ctx.send(arg)
+@bot.command(help='Echo the given message')
+async def say(ctx, *, message):
+    await ctx.send(message)
 
 @bot.command(help='Send dancing cow GIF')
 async def dance(ctx):
     await ctx.send(file=discord.File('dance.gif'))
 
 @bot.command(help='Evaluate a SymPy expression')
-async def sp(ctx, *, arg):
+async def sp(ctx, *, expression):
     try:
-        result = sympy_parser.parse_expr(arg, transformations=sympy_parser.standard_transformations
+        result = sympy_parser.parse_expr(expression, transformations=sympy_parser.standard_transformations
                                          + (sympy_parser.implicit_multiplication_application,
                                             sympy_parser.rationalize,
                                             sympy_parser.convert_xor))
