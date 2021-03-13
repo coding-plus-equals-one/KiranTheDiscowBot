@@ -3,6 +3,9 @@
 import discord
 from discord.ext import commands
 import os
+import sympy
+from sympy.parsing import sympy_parser
+import traceback
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -62,5 +65,16 @@ async def say(ctx, *, arg):
 @bot.command(help='Send dancing cow GIF')
 async def dance(ctx):
     await ctx.send(file=discord.File('dance.gif'))
+
+@bot.command(help='Evaluate a SymPy expression')
+async def sympy(ctx, *, arg):
+    try:
+        await ctx.send('```\n{}\n```'.format(
+            sympy.pretty(sympy_parser.parse_expr(arg, transformations=sympy_parser.standard_transformations
+                                                 + (sympy_parser.implicit_multiplication_application,
+                                                    sympy_parser.rationalize,
+                                                    sympy_parser.convert_xor)))))
+    except:
+        await ctx.send(traceback.format_exc())
 
 bot.run(os.environ['KIRAN_TOKEN'])
