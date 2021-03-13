@@ -78,4 +78,10 @@ async def sp(ctx, *, arg):
     else:
         await ctx.send('```\n{}\n```'.format(sympy.pretty(result)))
 
+@bot.event
+async def on_command_error(ctx, error):
+    await ctx.send('```\n{}\n```'.format(''.join(traceback.format_exception(
+        etype=type(error), value=error, tb=error.__traceback__
+    ))))
+
 bot.run(os.environ['KIRAN_TOKEN'])
