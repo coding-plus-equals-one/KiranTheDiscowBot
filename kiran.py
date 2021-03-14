@@ -74,13 +74,13 @@ async def sp(ctx, *, expression):
                                             sympy_parser.rationalize,
                                             sympy_parser.convert_xor))
     except:
-        await ctx.send('```{}```'.format(traceback.format_exc()))
+        await ctx.send('```\n{}\n```'.format(traceback.format_exc()))
     else:
-        await ctx.send('```{}```'.format(sympy.pretty(result)))
+        await ctx.send('```\n{}\n```'.format(sympy.pretty(result)))
 
 @bot.event
 async def on_command_error(ctx, error):
-    await ctx.send('```{}```'.format(''.join(traceback.format_exception(
+    await ctx.send('```\n{}\n```'.format(''.join(traceback.format_exception(
         etype=type(error), value=error, tb=error.__traceback__
     ))))
 
