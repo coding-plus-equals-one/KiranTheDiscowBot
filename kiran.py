@@ -35,14 +35,14 @@ async def add(ctx, *, new_task: commands.clean_content):
     tasks[ctx.guild].append(new_task)
     await ctx.send('Added task ' + new_task)
     if len(ctx.message.mentions) > 0:
-        await ctx.send(' '.join([user.mention for user in ctx.message.mentions]) + ' You have a new task!')
+        await ctx.send(' '.join(user.mention for user in ctx.message.mentions) + ' You have a new task!')
 
 @task.command(help='List tasks')
 async def list(ctx):
     if len(tasks[ctx.guild]) == 0:
         await ctx.send('There are no tasks. Yay!')
     else:
-        await ctx.send('\n'.join([f'{i + 1}. {task}' for i, task in zip(range(len(tasks[ctx.guild])), tasks[ctx.guild])]))
+        await ctx.send('\n'.join(f'{i + 1}. {task}' for i, task in zip(range(len(tasks[ctx.guild])), tasks[ctx.guild])))
 
 @task.command(help='Remove task specified by its number')
 async def remove(ctx, task_index: int):
