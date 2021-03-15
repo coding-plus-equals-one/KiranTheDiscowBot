@@ -12,9 +12,9 @@ import re
 load_dotenv()
 
 with open('bad_words.txt') as bad_words_file:
-    BAD_WORDS = [re.compile(line) for line in bad_words_file.read().splitlines()]
+    BAD_WORDS = [re.compile(line, re.IGNORECASE) for line in bad_words_file.read().splitlines()]
 
-SHAME_CHANNEL_PATTERN = re.compile(r'.*wall.*of.*shame.*', re.DOTALL)
+SHAME_CHANNEL_PATTERN = re.compile(r'.*wall.*of.*shame.*', re.DOTALL | re.IGNORECASE)
 
 intents = discord.Intents.default()
 intents.members = True
