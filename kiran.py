@@ -7,8 +7,14 @@ import sympy
 from sympy.parsing import sympy_parser
 import traceback
 from dotenv import load_dotenv
+import re
 
 load_dotenv()
+
+with open('bad_words.txt') as bad_words_file:
+    BAD_WORDS = [re.compile(line) for line in bad_words_file.read().splitlines()]
+
+SHAME_CHANNEL_PATTERN = re.compile(r'.*wall.*of.*shame.*', re.DOTALL)
 
 intents = discord.Intents.default()
 intents.members = True
@@ -83,5 +89,18 @@ async def on_command_error(ctx, error):
     await ctx.send('```\n{}\n```'.format(''.join(traceback.format_exception(
         etype=type(error), value=error, tb=error.__traceback__
     ))))
+
+@bot.event
+async def on_message(message):
+    if any(bad_word.search(message.clean_content) is not None for bad_word in BAD_WORDS):
+        shame_channel = message.channel
+        try:
+            for channel in message.guild.text_channels:
+                if SHAME_CHANNEL_PATTERN.fullmatch(channel.name):
+                    shame_channel = channel
+                    break
+        except AttributeError:
+            pass
+        await shame_channel.send('{} SAID A BAD WORD'.format(message.author.display_name.upper()))
 
 bot.run(os.environ['KIRAN_TOKEN'])
