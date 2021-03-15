@@ -102,5 +102,6 @@ async def on_message(message):
         except AttributeError:
             pass
         await shame_channel.send('{} SAID A BAD WORD'.format(message.author.display_name.upper()))
+    await bot.process_commands(message)
 
 bot.run(os.environ['KIRAN_TOKEN'])
