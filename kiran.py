@@ -97,8 +97,8 @@ async def _speak(ctx, lang, message):
         if ctx.voice_client.is_playing():
             ctx.voice_client.stop()
         await ctx.voice_client.move_to(ctx.author.voice.channel)
-    tts = gTTS(message)
-    tts.save('message.mp3', lang=lang)
+    tts = gTTS(message, lang=lang)
+    tts.save('message.mp3')
     source = discord.FFmpegPCMAudio('message.mp3')
     ctx.voice_client.play(source)
 
