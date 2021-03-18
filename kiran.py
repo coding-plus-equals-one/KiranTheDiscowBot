@@ -93,6 +93,8 @@ async def speak(ctx, *, message: commands.clean_content):
     if ctx.voice_client is None:
         await ctx.author.voice.channel.connect()
     else:
+        if ctx.voice_client.is_playing():
+            ctx.voice_client.stop()
         await ctx.voice_client.move_to(ctx.author.voice.channel)
     tts = gTTS(message, lang='en')
     tts.save('message.mp3')
