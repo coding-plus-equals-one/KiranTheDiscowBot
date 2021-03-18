@@ -116,7 +116,7 @@ async def _speak(ctx, lang, message):
     tts = gTTS(message, lang=lang)
     tts.write_to_fp(fp)
     fp.seek(0)
-    source = discord.FFmpegPCMAudio(fp, pipe=True, before_options='-f mp3')
+    source = discord.FFmpegPCMAudio(fp, pipe=True)
     ctx.voice_client.play(source)
 
 @bot.command(help='Speak the given message')
