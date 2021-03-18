@@ -86,7 +86,7 @@ async def sp(ctx, *, expression):
         await ctx.send('```\n{}\n```'.format(sympy.pretty(result)))
 
 @bot.command(help='Speak the given message')
-async def speak(ctx, *, message):
+async def speak(ctx, *, message: commands.clean_content):
     if not ctx.author.voice:
         await ctx.send("You must be in a voice channel.")
         return
