@@ -128,6 +128,10 @@ async def speak(ctx, *, message: commands.clean_content):
 async def speaklang(ctx, language, *, message: commands.clean_content):
     await _speak(ctx, language, message)
 
+@bot.command(help='Disconnect from voice channel')
+async def disconnect(ctx):
+    await ctx.voice_client.disconnect()
+
 @bot.event
 async def on_command_error(ctx, error):
     await send_block(ctx, ''.join(traceback.format_exception(
