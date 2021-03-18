@@ -90,7 +90,10 @@ async def speak(ctx, *, message):
     if not ctx.author.voice:
         await ctx.send("You must be in a voice channel.")
         return
-    await ctx.author.voice.channel.connect()
+    if ctx.voice_client is None:
+        await ctx.author.voice.channel.connect()
+    else
+        await ctx.voice_client.move_to(ctx.author.voice.channel)
     tts = gTTS(message, lang='en')
     tts.save('message.mp3')
     source = discord.FFmpegPCMAudio('message.mp3')
