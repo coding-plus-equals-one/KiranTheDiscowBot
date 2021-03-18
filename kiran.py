@@ -130,7 +130,8 @@ async def speaklang(ctx, language, *, message: commands.clean_content):
 
 @bot.command(help='Disconnect from voice channel')
 async def disconnect(ctx):
-    await ctx.voice_client.disconnect()
+    if ctx.voice_client is not None:
+        await ctx.voice_client.disconnect()
 
 @bot.event
 async def on_command_error(ctx, error):
