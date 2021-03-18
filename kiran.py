@@ -85,6 +85,10 @@ async def say(ctx, *, message):
 async def dance(ctx):
     await ctx.send(file=discord.File('dance.gif'))
 
+@bot.command(help='Send skateboaring cow GIF')
+async def skateboard(ctx):
+    await ctx.send(file=discord.File('skateboard.gif'))
+
 @bot.command(help='Evaluate a SymPy expression')
 async def sp(ctx, *, expression):
     try:
