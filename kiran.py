@@ -97,7 +97,7 @@ async def speak(ctx, *, message: commands.clean_content):
         if ctx.voice_client.is_playing():
             ctx.voice_client.stop()
         await ctx.voice_client.move_to(ctx.author.voice.channel)
-    msg_fp = BytesIO()
+    msg_fp = io.BytesIO()
     tts = gTTS(message, lang='en')
     tts.write_to_fp(msg_fp)
     source = discord.FFmpegPCMAudio(msg_fp)
