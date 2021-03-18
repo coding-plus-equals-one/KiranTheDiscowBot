@@ -9,6 +9,7 @@ import traceback
 from dotenv import load_dotenv
 import re
 from gtts import gTTS
+import tempfile
 
 load_dotenv()
 
@@ -111,9 +112,10 @@ async def _speak(ctx, lang, message):
         if ctx.voice_client.is_playing():
             ctx.voice_client.stop()
         await ctx.voice_client.move_to(ctx.author.voice.channel)
+    fp = tempfile.TemporaryFile()
     tts = gTTS(message, lang=lang)
-    tts.save('message.mp3')
-    source = discord.FFmpegPCMAudio('message.mp3')
+    tts.write_to_fp(fp)
+    source = discord.FFmpegPCMAudio(fp, pipe=True, before_options='-f mp4')
     ctx.voice_client.play(source)
 
 @bot.command(help='Speak the given message')
