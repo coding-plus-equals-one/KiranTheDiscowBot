@@ -18,7 +18,7 @@ with open('bad_words.txt') as bad_words_file:
 
 SHAME_CHANNEL_PATTERN = re.compile(r'.*wall.*of.*shame.*', re.DOTALL | re.IGNORECASE)
 
-discord.opus.load_opus('libopus.so.1')
+discord.opus.load_opus('libopus.so.0')
 
 intents = discord.Intents.default()
 intents.members = True
