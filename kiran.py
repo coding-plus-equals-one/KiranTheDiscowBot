@@ -87,8 +87,7 @@ async def sp(ctx, *, expression):
     else:
         await ctx.send('```\n{}\n```'.format(sympy.pretty(result)))
 
-@bot.command(help='Speak the given message')
-async def speak(ctx, *, message: commands.clean_content):
+async def _speak(ctx, lang, message):
     if not ctx.author.voice:
         await ctx.send("You must be in a voice channel.")
         return
@@ -99,9 +98,17 @@ async def speak(ctx, *, message: commands.clean_content):
             ctx.voice_client.stop()
         await ctx.voice_client.move_to(ctx.author.voice.channel)
     tts = gTTS(message)
-    tts.save('message.mp3')
+    tts.save('message.mp3', lang=lang)
     source = discord.FFmpegPCMAudio('message.mp3')
     ctx.voice_client.play(source)
+
+@bot.command(help='Speak the given message')
+async def speak(ctx, *, message: commands.clean_content):
+    _speak(ctx, 'en', message)
+
+@bot.command(help='Same as !speak but allows you to set the language')
+async def speaklang(ctx, lang, *, message: commands.clean_content):
+    _speak(ctx, lang, message)
 
 @bot.event
 async def on_command_error(ctx, error):
