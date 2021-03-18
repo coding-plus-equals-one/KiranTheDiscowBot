@@ -9,6 +9,7 @@ import traceback
 from dotenv import load_dotenv
 import re
 from gtts import gTTS
+import io
 
 load_dotenv()
 
@@ -96,9 +97,10 @@ async def speak(ctx, *, message: commands.clean_content):
         if ctx.voice_client.is_playing():
             ctx.voice_client.stop()
         await ctx.voice_client.move_to(ctx.author.voice.channel)
+    msg_fp = BytesIO()
     tts = gTTS(message, lang='en')
-    tts.save('message.mp3')
-    source = discord.FFmpegPCMAudio('message.mp3')
+    tts.write_to_fp(msg_fp)
+    source = discord.FFmpegPCMAudio(msg_fp)
     ctx.voice_client.play(source)
 
 @bot.event
