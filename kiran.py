@@ -24,6 +24,16 @@ intents.members = True
 
 bot = commands.Bot(intents=intents, command_prefix='!')
 
+async def send_block(destination, content):
+    paginator = commands.Paginator()
+    try:
+        paginator.add_line(content)
+    except RuntimeError:
+        for line in content.splitlines():
+            paginator.add_line(line)
+    for page in paginator.pages:
+        await destination.send(page)
+
 @bot.event
 async def on_ready():
     print('Logged in as {0.user}'.format(bot))
@@ -83,9 +93,9 @@ async def sp(ctx, *, expression):
                                             sympy_parser.rationalize,
                                             sympy_parser.convert_xor))
     except:
-        await ctx.send('```\n{}\n```'.format(traceback.format_exc()))
+        await send_block(ctx, traceback.format_exc())
     else:
-        await ctx.send('```\n{}\n```'.format(sympy.pretty(result)))
+        await send_block(ctx, sympy.pretty(result))
 
 async def _speak(ctx, lang, message):
     if not ctx.author.voice:
@@ -112,9 +122,9 @@ async def speaklang(ctx, language, *, message: commands.clean_content):
 
 @bot.event
 async def on_command_error(ctx, error):
-    await ctx.send('```\n{}\n```'.format(''.join(traceback.format_exception(
+    await send_block(ctx, ''.join(traceback.format_exception(
         etype=type(error), value=error, tb=error.__traceback__
-    ))))
+    )))
 
 @bot.event
 async def on_message(message):
