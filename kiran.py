@@ -107,8 +107,8 @@ async def speak(ctx, *, message: commands.clean_content):
     await _speak(ctx, 'en', message)
 
 @bot.command(help='Same as !speak but allows you to set the language')
-async def speaklang(ctx, lang, *, message: commands.clean_content):
-    await _speak(ctx, lang, message)
+async def speaklang(ctx, language, *, message: commands.clean_content):
+    await _speak(ctx, language, message)
 
 @bot.event
 async def on_command_error(ctx, error):
