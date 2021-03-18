@@ -100,7 +100,7 @@ async def speak(ctx, *, message: commands.clean_content):
     msg_fp = io.BytesIO()
     tts = gTTS(message, lang='en')
     tts.write_to_fp(msg_fp)
-    source = discord.FFmpegPCMAudio(msg_fp)
+    source = discord.FFmpegPCMAudio(msg_fp, pipe=True)
     ctx.voice_client.play(source)
 
 @bot.event
