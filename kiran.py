@@ -115,6 +115,7 @@ async def _speak(ctx, lang, message):
     fp = tempfile.TemporaryFile()
     tts = gTTS(message, lang=lang)
     tts.write_to_fp(fp)
+    fp.seek(0)
     source = discord.FFmpegPCMAudio(fp, pipe=True, before_options='-f mp3')
     ctx.voice_client.play(source)
 
