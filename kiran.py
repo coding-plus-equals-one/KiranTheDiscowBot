@@ -123,7 +123,8 @@ async def _speak(ctx, lang, message):
 async def speak(ctx, *, message: commands.clean_content):
     await _speak(ctx, 'en', message)
 
-@bot.command(help='Same as !speak but allows you to set the language')
+@bot.command(help='Same as !speak but allows you to set the language\n\n'
+             'Use two-letter language codes from https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes.')
 async def speaklang(ctx, language, *, message: commands.clean_content):
     await _speak(ctx, language, message)
 
