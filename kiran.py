@@ -8,6 +8,7 @@ from sympy.parsing import sympy_parser
 import traceback
 from dotenv import load_dotenv
 import re
+from gtts import gTTS
 
 load_dotenv()
 
@@ -83,6 +84,17 @@ async def sp(ctx, *, expression):
         await ctx.send('```\n{}\n```'.format(traceback.format_exc()))
     else:
         await ctx.send('```\n{}\n```'.format(sympy.pretty(result)))
+
+@bot.command(help='Speak the given message')
+async def speak(ctx, *, message):
+    if not ctx.author.voice:
+        await ctx.send("You must be in a voice channel.")
+        return
+    await ctx.author.voice.channel.connect()
+    tts = gTTS(message, lang='en')
+    tts.save('message.mp3')
+    source = discord.FFmpegPCMAudio('message.mp3')
+    ctx.voice_client.play(source)
 
 @bot.event
 async def on_command_error(ctx, error):
