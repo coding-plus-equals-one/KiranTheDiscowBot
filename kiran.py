@@ -86,7 +86,7 @@ async def say(ctx, *, message):
 async def dance(ctx):
     await ctx.send(file=discord.File('dance.gif'))
 
-@bot.command(help='Send skateboaring cow GIF')
+@bot.command(help='Send skateboarding cow GIF')
 async def skateboard(ctx):
     await ctx.send(file=discord.File('skateboard.gif'))
 
