@@ -144,24 +144,27 @@ async def on_command_error(ctx, error):
 
 @bot.event
 async def on_message(message):
-    if any(bad_word.search(message.clean_content) is not None for bad_word in BAD_WORDS):
-        shame_channel = message.channel
-        try:
-            for channel in message.guild.text_channels:
-                if SHAME_CHANNEL_PATTERN.fullmatch(channel.name):
-                    shame_channel = channel
-                    break
-        except AttributeError:
-            pass
-        await shame_channel.send('{} SAID A BAD WORD'.format(message.author.display_name.upper()))
-    if 'muted' in message.channel.name.lower() and message.author.voice:
-        await _joinvoice(message.guild.voice_client, message.author.voice.channel)
-        fp = tempfile.TemporaryFile()
-        tts = gTTS(message.author.display_name + ' says ' + message.clean_content)
-        tts.write_to_fp(fp)
-        fp.seek(0)
-        source = discord.FFmpegPCMAudio(fp, pipe=True)
-        message.guild.voice_client.play(source)
+    try:
+        if any(bad_word.search(message.clean_content) is not None for bad_word in BAD_WORDS):
+            shame_channel = message.channel
+            try:
+                for channel in message.guild.text_channels:
+                    if SHAME_CHANNEL_PATTERN.fullmatch(channel.name):
+                        shame_channel = channel
+                        break
+            except AttributeError:
+                pass
+            await shame_channel.send('{} SAID A BAD WORD'.format(message.author.display_name.upper()))
+        if 'muted' in message.channel.name.lower() and message.author.voice:
+            await _joinvoice(message.guild.voice_client, message.author.voice.channel)
+            fp = tempfile.TemporaryFile()
+            tts = gTTS(message.author.display_name + ' says ' + message.clean_content)
+            tts.write_to_fp(fp)
+            fp.seek(0)
+            source = discord.FFmpegPCMAudio(fp, pipe=True)
+            message.guild.voice_client.play(source)
+    except:
+        await send_block(message.channel, traceback.format_exc())
     await bot.process_commands(message)
 
 bot.run(os.environ['KIRAN_TOKEN'])
