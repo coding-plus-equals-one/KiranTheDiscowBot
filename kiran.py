@@ -168,7 +168,7 @@ async def on_message(message):
         if 'muted' in message.channel.name.lower() and message.author.voice and not message.content.startswith('!'):
             await _joinvoice(message.guild.voice_client, message.author.voice.channel)
             fp = tempfile.TemporaryFile()
-            tts = gTTS(message.author.display_name + ' says: ' + message.clean_content)
+            tts = gTTS(message.author.display_name + ' said: ' + message.clean_content)
             tts.write_to_fp(fp)
             fp.seek(0)
             source = discord.FFmpegPCMAudio(fp, pipe=True)
