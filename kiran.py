@@ -102,16 +102,19 @@ async def sp(ctx, *, expression):
     else:
         await send_block(ctx, sympy.pretty(result))
 
+async def _joinvoice(voice_client, channel):
+    if voice_client is None:
+        await channel.connect()
+    else:
+        if voice_client.is_playing():
+            voice_client.stop()
+        await voice_client.move_to(channel)
+
 async def _speak(ctx, lang, message):
     if not ctx.author.voice:
         await ctx.send("You must be in a voice channel.")
         return
-    if ctx.voice_client is None:
-        await ctx.author.voice.channel.connect()
-    else:
-        if ctx.voice_client.is_playing():
-            ctx.voice_client.stop()
-        await ctx.voice_client.move_to(ctx.author.voice.channel)
+    _joinvoice(ctx.voice_client, ctx.author.voice.channel)
     fp = tempfile.TemporaryFile()
     tts = gTTS(message, lang=lang)
     tts.write_to_fp(fp)
@@ -151,6 +154,14 @@ async def on_message(message):
         except AttributeError:
             pass
         await shame_channel.send('{} SAID A BAD WORD'.format(message.author.display_name.upper()))
-    await bot.process_commands(message)
+    if 'muted' in message.channel.name.lower() and message.author.voice:
+        _joinvoice(message.guild.voice_client, message.author.voice.channel)
+        fp = tempfile.TemporaryFile()
+        tts = gTTS(message.clean_content)
+        tts.write_to_fp(fp)
+        fp.seek(0)
+        source = discord.FFmpegPCMAudio(fp, pipe=True)
+        message.guild.voice_client.play(source)
+        await bot.process_commands(message)
 
 bot.run(os.environ['KIRAN_TOKEN'])
