@@ -110,7 +110,7 @@ async def _joinvoice(voice_client, channel):
             voice_client.stop()
         await voice_client.move_to(channel)
 
-async def _speak(ctx, lang, message):
+async def _speak(ctx, lang, tld, message):
     if not ctx.author.voice:
         await ctx.send("You must be in a voice channel.")
         return
@@ -124,12 +124,22 @@ async def _speak(ctx, lang, message):
 
 @bot.command(help='Speak the given message')
 async def speak(ctx, *, message: commands.clean_content):
-    await _speak(ctx, 'en', message)
+    await _speak(ctx, 'en', 'com', message)
 
 @bot.command(help='Same as !speak but allows you to set the language\n\n'
              'Use two-letter language codes from https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes.')
 async def speaklang(ctx, language, *, message: commands.clean_content):
-    await _speak(ctx, language, message)
+    await _speak(ctx, language, 'com', message)
+
+@bot.command(help='Same as !speak but allows you to specify the accent\n\n'
+             'See https://gtts.readthedocs.io/en/latest/module.html#localized-accents for possible values.')
+async def speakaccent(ctx, tld, *, message: commands.clean_content):
+    await _speak(ctx, 'en', tld, message)
+
+@bot.command(help="Same as !speak but allows you to specify the language and accent\n\n"
+             'See the help for !speaklang and !speakaccent for more info.')
+async def speaklangaccent(ctx, language, tld, *, message: commands.clean_content):
+    await _speak(ctx, language, tld, message)
 
 @bot.command(help='Disconnect from voice channel')
 async def disconnect(ctx):
