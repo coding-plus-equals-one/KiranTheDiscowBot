@@ -165,7 +165,7 @@ async def on_message(message):
             except AttributeError:
                 pass
             await shame_channel.send('{} SAID A BAD WORD'.format(message.author.display_name.upper()))
-        if 'muted' in message.channel.name.lower() and message.author.voice:
+        if 'muted' in message.channel.name.lower() and message.author.voice and not message.content.startswith('!'):
             await _joinvoice(message.guild.voice_client, message.author.voice.channel)
             fp = tempfile.TemporaryFile()
             tts = gTTS(message.author.display_name + ' says ' + message.clean_content)
