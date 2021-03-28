@@ -162,6 +162,6 @@ async def on_message(message):
         fp.seek(0)
         source = discord.FFmpegPCMAudio(fp, pipe=True)
         message.guild.voice_client.play(source)
-        await bot.process_commands(message)
+    await bot.process_commands(message)
 
 bot.run(os.environ['KIRAN_TOKEN'])
