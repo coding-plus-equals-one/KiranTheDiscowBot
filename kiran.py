@@ -116,7 +116,7 @@ async def _speak(ctx, lang, tld, message):
         return
     await _joinvoice(ctx.voice_client, ctx.author.voice.channel)
     fp = tempfile.TemporaryFile()
-    tts = gTTS(message, lang=lang)
+    tts = gTTS(message, lang=lang, tld=tld)
     tts.write_to_fp(fp)
     fp.seek(0)
     source = discord.FFmpegPCMAudio(fp, pipe=True)
