@@ -114,7 +114,7 @@ async def _speak(ctx, lang, message):
     if not ctx.author.voice:
         await ctx.send("You must be in a voice channel.")
         return
-    _joinvoice(ctx.voice_client, ctx.author.voice.channel)
+    await _joinvoice(ctx.voice_client, ctx.author.voice.channel)
     fp = tempfile.TemporaryFile()
     tts = gTTS(message, lang=lang)
     tts.write_to_fp(fp)
@@ -155,7 +155,7 @@ async def on_message(message):
             pass
         await shame_channel.send('{} SAID A BAD WORD'.format(message.author.display_name.upper()))
     if 'muted' in message.channel.name.lower() and message.author.voice:
-        _joinvoice(message.guild.voice_client, message.author.voice.channel)
+        await _joinvoice(message.guild.voice_client, message.author.voice.channel)
         fp = tempfile.TemporaryFile()
         tts = gTTS(message.clean_content)
         tts.write_to_fp(fp)
