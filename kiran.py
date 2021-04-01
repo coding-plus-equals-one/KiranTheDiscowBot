@@ -152,7 +152,7 @@ async def fun(ctx):
         await ctx.send("You must be in a voice channel.")
         return
     await _joinvoice(ctx.voice_client, ctx.author.voice.channel)
-    source = FFmpegOpusAudio('fun.opus', codec='copy')
+    source = discord.FFmpegOpusAudio('fun.opus', codec='copy')
     ctx.voice_client.play(source)
 
 @bot.event
