@@ -146,6 +146,15 @@ async def disconnect(ctx):
     if ctx.voice_client is not None:
         await ctx.voice_client.disconnect()
 
+@bot.command(help="Mystery command")
+async def fun(ctx):
+    if not ctx.author.voice:
+        await ctx.send("You must be in a voice channel.")
+        return
+    await _joinvoice(ctx.voice_client, ctx.author.voice.channel)
+    source = FFmpegOpusAudio('fun.opus', codec='copy')
+    ctx.voice_client.play(source)
+
 @bot.event
 async def on_command_error(ctx, error):
     await send_block(ctx, ''.join(traceback.format_exception(
