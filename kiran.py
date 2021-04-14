@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 import re
 from gtts import gTTS
 import tempfile
+import subprocess
 
 load_dotenv()
 
@@ -154,6 +155,11 @@ async def fun(ctx):
     await _joinvoice(ctx.voice_client, ctx.author.voice.channel)
     source = discord.FFmpegOpusAudio('fun.opus', codec='copy')
     ctx.voice_client.play(source)
+
+@bot.command(help='The original cowsay command\n\n'
+             'https://manpages.debian.org/buster/cowsay/cowsay.6.en.html')
+async def cowsay(ctx, *args):
+    send_block(ctx, subprocess.run(('cowsay',) + args, capture_output=True, text=True).stdout)
 
 @bot.event
 async def on_command_error(ctx, error):
