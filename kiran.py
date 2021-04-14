@@ -156,8 +156,27 @@ async def fun(ctx):
     source = discord.FFmpegOpusAudio('fun.opus', codec='copy')
     ctx.voice_client.play(source)
 
-@bot.command(help='The original cowsay command\n\n'
-             'https://manpages.debian.org/buster/cowsay/cowsay.6.en.html')
+@bot.command(help="""The original cowsay command
+
+https://manpages.debian.org/buster/cowsay/cowsay.6.en.html
+
+COWS:
+apt                fox           sheep
+bud-frogs          ghostbusters  skeleton
+bunny              gnu           snowman
+calvin             hellokitty    stegosaurus
+cheese             kangaroo      stimpy
+cock               kiss          suse
+cower              koala         three-eyes
+daemon             kosh          turkey
+default            luke-koala    turtle
+dragon-and-cow     mech-and-cow  tux
+dragon             milk          unipony
+duck               moofasa       unipony-smaller
+elephant           moose         vader
+elephant-in-snake  pony          vader-koala
+eyes               pony-smaller  www
+flaming-sheep      ren""")
 async def cowsay(ctx, *args):
     await send_block(ctx, subprocess.run(('cowsay',) + args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True).stdout)
 
