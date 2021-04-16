@@ -284,6 +284,21 @@ async def cowsay(ctx, *args):
 async def cowthink(ctx, *args):
     await send_block(ctx, subprocess.run(('cowthink',) + args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True).stdout)
 
+def cowsay_block(block):
+    return subprocess.run(['cowsay', '-n'], input=block, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True).stdout
+
+@bot.command(help='Evaluate a SymPy expression and cowsay the result')
+async def cowsaysp(ctx, *, expression):
+    try:
+        result = sympy_parser.parse_expr(expression, transformations=sympy_parser.standard_transformations
+                                         + (sympy_parser.implicit_multiplication_application,
+                                            sympy_parser.rationalize,
+                                            sympy_parser.convert_xor))
+    except:
+        await send_block(ctx, cowsay_block(traceback.format_exc()))
+    else:
+        await send_block(ctx, cowsay_block(sympy.pretty(result)))
+
 @bot.event
 async def on_command_error(ctx, error):
     await send_block(ctx, ''.join(traceback.format_exception(
