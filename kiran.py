@@ -104,7 +104,7 @@ def eval_sympy(expression):
         if orig == result:
             return sympy.pretty(orig)
         else:
-            return sympy.pretty(sympy.Eq(orig, result))
+            return sympy.pretty(sympy.Eq(orig, result, evaluate=False))
 
 @bot.command(help='Evaluate a SymPy expression')
 async def sp(ctx, *, expression):
