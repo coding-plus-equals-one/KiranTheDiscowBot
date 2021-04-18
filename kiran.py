@@ -91,17 +91,24 @@ async def dance(ctx):
 async def skateboard(ctx):
     await ctx.send(file=discord.File('skateboard.gif'))
 
-@bot.command(help='Evaluate a SymPy expression')
-async def sp(ctx, *, expression):
+def eval_sympy(expression):
     try:
-        result = sympy_parser.parse_expr(expression, transformations=sympy_parser.standard_transformations
+        orig = sympy_parser.parse_expr(expression, transformations=sympy_parser.standard_transformations
                                          + (sympy_parser.implicit_multiplication_application,
                                             sympy_parser.rationalize,
-                                            sympy_parser.convert_xor))
+                                            sympy_parser.convert_xor), evaluate=False)
+        result = orig.simplify()
     except:
-        await send_block(ctx, traceback.format_exc())
+        return traceback.format_exc()
     else:
-        await send_block(ctx, sympy.pretty(result))
+        if orig == result:
+            return sympy.pretty(orig)
+        else:
+            return sympy.pretty(sympy.Eq(orig, result))
+
+@bot.command(help='Evaluate a SymPy expression')
+async def sp(ctx, *, expression):
+    send_block(ctx, eval_sympy(expression))
 
 async def _joinvoice(voice_client, channel):
     if voice_client is None:
@@ -289,15 +296,7 @@ def cowsay_block(block):
 
 @bot.command(help='Evaluate a SymPy expression and cowsay the result')
 async def cowsaysp(ctx, *, expression):
-    try:
-        result = sympy_parser.parse_expr(expression, transformations=sympy_parser.standard_transformations
-                                         + (sympy_parser.implicit_multiplication_application,
-                                            sympy_parser.rationalize,
-                                            sympy_parser.convert_xor))
-    except:
-        await send_block(ctx, cowsay_block(traceback.format_exc()))
-    else:
-        await send_block(ctx, cowsay_block(sympy.pretty(result)))
+    await send_block(ctx, cowsay_block(eval_sympy(expression)))
 
 @bot.event
 async def on_command_error(ctx, error):
