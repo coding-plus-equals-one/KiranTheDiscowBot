@@ -108,7 +108,7 @@ def eval_sympy(expression):
 
 @bot.command(help='Evaluate a SymPy expression')
 async def sp(ctx, *, expression):
-    send_block(ctx, eval_sympy(expression))
+    await send_block(ctx, eval_sympy(expression))
 
 async def _joinvoice(voice_client, channel):
     if voice_client is None:
