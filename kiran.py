@@ -91,7 +91,7 @@ async def dance(ctx):
 async def skateboard(ctx):
     await ctx.send(file=discord.File('skateboard.gif'))
 
-@bot.command(help='Evaluate a SymPy expression')
+@bot.command(help='Evaluate a SymPy math expression')
 async def sp(ctx, *, expression):
     try:
         result = sympy_parser.parse_expr(expression, transformations=sympy_parser.standard_transformations
@@ -287,7 +287,7 @@ async def cowthink(ctx, *args):
 def cowsay_block(block):
     return subprocess.run(['cowsay', '-n'], input=block, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True).stdout
 
-@bot.command(help='Evaluate a SymPy expression and cowsay the result')
+@bot.command(help='Evaluate a SymPy math expression and cowsay the result')
 async def cowsaysp(ctx, *, expression):
     try:
         result = sympy_parser.parse_expr(expression, transformations=sympy_parser.standard_transformations
