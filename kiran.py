@@ -113,7 +113,7 @@ async def _joinvoice(voice_client, channel):
 
 async def _speak(ctx, lang, tld, message):
     if not ctx.author.voice:
-        await ctx.send("You must be in a voice channel.")
+        await ctx.send("You must be in a voice channel in order to use this command.")
         return
     await _joinvoice(ctx.voice_client, ctx.author.voice.channel)
     fp = tempfile.TemporaryFile()
@@ -150,7 +150,7 @@ async def disconnect(ctx):
 @bot.command(help="Mystery command")
 async def fun(ctx):
     if not ctx.author.voice:
-        await ctx.send("You must be in a voice channel.")
+        await ctx.send("You must be in a voice channel in order to use this command.")
         return
     await _joinvoice(ctx.voice_client, ctx.author.voice.channel)
     source = discord.FFmpegOpusAudio('fun.opus', codec='copy')
