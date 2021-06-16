@@ -194,7 +194,7 @@ async def speaklangaccent(ctx, language, tld, *,
     await _speak(ctx, language, tld, message)
 
 
-@bot.command()
+@bot.command(aliases=['dc'])
 async def disconnect(ctx):
     """Disconnect from voice channel."""
     if ctx.voice_client is not None:
