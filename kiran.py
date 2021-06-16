@@ -208,7 +208,9 @@ async def fun(ctx, victim: discord.Member = None):
         victim = ctx.author
     if not victim.voice:
         await ctx.send(
-            "The victim must be in a voice channel in order to use this command."
+            "You must be in a voice channel in order to use this command."
+            if victim == ctx.author else
+            "The victim must be in a voice channel in order for this command to work."
         )
         return
     await _joinvoice(ctx.voice_client, victim.voice.channel)
