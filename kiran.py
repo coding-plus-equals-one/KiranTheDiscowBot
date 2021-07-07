@@ -8,8 +8,8 @@ import subprocess
 import asyncio
 import discord
 from discord.ext import commands
-import sympy
-from sympy.parsing import sympy_parser
+# import sympy
+# from sympy.parsing import sympy_parser
 from dotenv import load_dotenv
 from gtts import gTTS
 
@@ -123,19 +123,19 @@ async def skateboard(ctx):
     await ctx.send(file=discord.File('skateboard.gif'))
 
 
-@bot.command(name='sp')
-async def eval_sympy(ctx, *, expression):
-    """Evaluate a SymPy math expression."""
-    try:
-        result = sympy_parser.parse_expr(
-            expression,
-            transformations=sympy_parser.standard_transformations +
-            (sympy_parser.implicit_multiplication_application,
-             sympy_parser.rationalize, sympy_parser.convert_xor))
-    except:
-        await send_block(ctx, traceback.format_exc())
-    else:
-        await send_block(ctx, sympy.pretty(result))
+# @bot.command(name='sp')
+# async def eval_sympy(ctx, *, expression):
+#     """Evaluate a SymPy math expression."""
+#     try:
+#         result = sympy_parser.parse_expr(
+#             expression,
+#             transformations=sympy_parser.standard_transformations +
+#             (sympy_parser.implicit_multiplication_application,
+#              sympy_parser.rationalize, sympy_parser.convert_xor))
+#     except:
+#         await send_block(ctx, traceback.format_exc())
+#     else:
+#         await send_block(ctx, sympy.pretty(result))
 
 
 async def _joinvoice(voice_client, channel):
@@ -372,19 +372,19 @@ async def cowsay_block(block):
     return (await proc.communicate(block.encode()))[0].decode()
 
 
-@bot.command()
-async def cowsaysp(ctx, *, expression):
-    """Evaluate a SymPy math expression and cowsay the result."""
-    try:
-        result = sympy_parser.parse_expr(
-            expression,
-            transformations=sympy_parser.standard_transformations +
-            (sympy_parser.implicit_multiplication_application,
-             sympy_parser.rationalize, sympy_parser.convert_xor))
-    except:
-        await send_block(ctx, cowsay_block(traceback.format_exc()))
-    else:
-        await send_block(ctx, cowsay_block(sympy.pretty(result)))
+# @bot.command()
+# async def cowsaysp(ctx, *, expression):
+#     """Evaluate a SymPy math expression and cowsay the result."""
+#     try:
+#         result = sympy_parser.parse_expr(
+#             expression,
+#             transformations=sympy_parser.standard_transformations +
+#             (sympy_parser.implicit_multiplication_application,
+#              sympy_parser.rationalize, sympy_parser.convert_xor))
+#     except:
+#         await send_block(ctx, cowsay_block(traceback.format_exc()))
+#     else:
+#         await send_block(ctx, cowsay_block(sympy.pretty(result)))
 
 
 @bot.event
