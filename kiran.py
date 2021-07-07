@@ -53,7 +53,7 @@ async def on_ready():
 tasks = {}
 
 
-@bot.command
+@bot.command()
 async def hello(ctx):
     """Say hello."""
     await ctx.send(f'Hello, {ctx.author.display_name}!')
@@ -105,19 +105,19 @@ async def clear(ctx):
     await ctx.send('Cleared tasks')
 
 
-@bot.command
+@bot.command()
 async def say(ctx, *, message):
     """Echo the given message."""
     await ctx.send(message)
 
 
-@bot.command
+@bot.command()
 async def dance(ctx):
     """Send a dancing cow GIF."""
     await ctx.send(file=discord.File('dance.gif'))
 
 
-@bot.command
+@bot.command()
 async def skateboard(ctx):
     """Send a skateboarding cow GIF."""
     await ctx.send(file=discord.File('skateboard.gif'))
@@ -161,13 +161,13 @@ async def _speak(ctx, lang, tld, message):
     ctx.voice_client.play(source)
 
 
-@bot.command
+@bot.command()
 async def speak(ctx, *, message: commands.clean_content):
     """Speak the given message."""
     await _speak(ctx, 'en', 'com', message)
 
 
-@bot.command
+@bot.command()
 async def speaklang(ctx, language, *, message: commands.clean_content):
     """Same as !speak but allows you to set the language.
 
@@ -176,7 +176,7 @@ async def speaklang(ctx, language, *, message: commands.clean_content):
     await _speak(ctx, language, 'com', message)
 
 
-@bot.command
+@bot.command()
 async def speakaccent(ctx, tld, *, message: commands.clean_content):
     """Same as !speak but allows you to specify the accent.
 
@@ -185,7 +185,7 @@ async def speakaccent(ctx, tld, *, message: commands.clean_content):
     await _speak(ctx, 'en', tld, message)
 
 
-@bot.command
+@bot.command()
 async def speaklangaccent(ctx, language, tld, *,
                           message: commands.clean_content):
     """Same as !speak but allows you to specify the language and accent.
@@ -202,7 +202,7 @@ async def disconnect(ctx):
         await ctx.voice_client.disconnect()
 
 
-@bot.command
+@bot.command()
 async def fun(ctx, victim: discord.Member = None):
     """Mystery command."""
     if victim is None:
@@ -219,7 +219,7 @@ async def fun(ctx, victim: discord.Member = None):
     ctx.voice_client.play(source)
 
 
-@bot.command
+@bot.command()
 async def cowsay(ctx, *args):
     """The original cowsay command.
 
@@ -350,7 +350,7 @@ async def cowsay(ctx, *args):
     await send_block(ctx, (await proc.communicate())[0].decode())
 
 
-@bot.command
+@bot.command()
 async def cowthink(ctx, *args):
     """Variation of cowsay.
 
@@ -372,7 +372,7 @@ async def cowsay_block(block):
     return (await proc.communicate(block.encode()))[0].decode()
 
 
-# @bot.command
+# @bot.command()
 # async def cowsaysp(ctx, *, expression):
 #     """Evaluate a SymPy math expression and cowsay the result."""
 #     try:
