@@ -397,42 +397,40 @@ async def on_error(ctx, error):
                                        tb=error.__traceback__)))
 
 
-async def _bad_word_check(message):
-    if any(
-            bad_word.search(message.clean_content) is not None
-            for bad_word in BAD_WORDS):
-        shame_channel = message.channel
-        try:
-            for channel in message.guild.text_channels:
-                if SHAME_CHANNEL_PATTERN.fullmatch(channel.name):
-                    shame_channel = channel
-                    break
-        except AttributeError:
-            pass  # Message has no guild
-        await shame_channel.send('{} SAID A BAD WORD'.format(
-            message.author.display_name.upper()))
-
-
-async def _speak_muted(message):
-    if not isinstance(
-            message.channel,
-            discord.DMChannel) and 'muted' in message.channel.name.lower(
-            ) and message.author.voice and not message.content.startswith('!'):
-        await _joinvoice(message.guild.voice_client,
-                         message.author.voice.channel)
-        temp_file = tempfile.TemporaryFile()
-        tts = gTTS(message.author.display_name + ' said: ' +
-                   message.clean_content)
-        tts.write_to_fp(temp_file)
-        temp_file.seek(0)
-        source = discord.FFmpegPCMAudio(temp_file, pipe=True)
-        message.guild.voice_client.play(source)
-
-
 @bot.event
 async def on_message(message):
     """Check for bad words and speak things in the muted channel."""
-    await asyncio.gather(_bad_word_check(message), _speak_muted(message),
+    async def bad_word_check():
+        if any(
+                bad_word.search(message.clean_content) is not None
+                for bad_word in BAD_WORDS):
+            shame_channel = message.channel
+            try:
+                for channel in message.guild.text_channels:
+                    if SHAME_CHANNEL_PATTERN.fullmatch(channel.name):
+                        shame_channel = channel
+                        break
+            except AttributeError:
+                pass  # Message has no guild
+            await shame_channel.send('{} SAID A BAD WORD'.format(
+                message.author.display_name.upper()))
+
+    async def speak_muted():
+        if not isinstance(
+                message.channel, discord.DMChannel
+        ) and 'muted' in message.channel.name.lower(
+        ) and message.author.voice and not message.content.startswith('!'):
+            await _joinvoice(message.guild.voice_client,
+                             message.author.voice.channel)
+            temp_file = tempfile.TemporaryFile()
+            tts = gTTS(message.author.display_name + ' said: ' +
+                       message.clean_content)
+            tts.write_to_fp(temp_file)
+            temp_file.seek(0)
+            source = discord.FFmpegPCMAudio(temp_file, pipe=True)
+            message.guild.voice_client.play(source)
+
+    await asyncio.gather(bad_word_check(), speak_muted(),
                          bot.process_commands(message))
 
 
