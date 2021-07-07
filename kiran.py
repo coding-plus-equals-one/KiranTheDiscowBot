@@ -398,6 +398,16 @@ async def on_error(ctx, error):
 
 
 @bot.event
+async def on_command_error(ctx, error):
+    """Send command errors to the text channel."""
+    await send_block(
+        ctx, ''.join(
+            traceback.format_exception(etype=type(error),
+                                       value=error,
+                                       tb=error.__traceback__)))
+
+
+@bot.event
 async def on_message(message):
     """Check for bad words and speak things in the muted channel."""
     async def bad_word_check():
