@@ -78,7 +78,7 @@ async def add(ctx, *, new_task: commands.clean_content):
 
 
 @task.command(name='list')
-async def lst(ctx):
+async def list_(ctx):
     """List tasks."""
     if len(tasks[ctx.guild]) == 0:
         await ctx.send('There are no tasks. Yay!')
