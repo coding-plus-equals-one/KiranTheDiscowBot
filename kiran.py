@@ -12,6 +12,7 @@ from discord.ext import commands
 # from sympy.parsing import sympy_parser
 from dotenv import load_dotenv
 from gtts import gTTS
+import c4board
 
 load_dotenv()
 
@@ -385,6 +386,67 @@ async def cowsay_block(block):
 #         await send_block(ctx, cowsay_block(traceback.format_exc()))
 #     else:
 #         await send_block(ctx, cowsay_block(sympy.pretty(result)))
+
+
+@bot.command()
+async def c4(ctx):  # pylint: disable=invalid-name
+    """Play Four in a Row."""
+    board = c4board.C4Board()
+    msg = await ctx.send(board)
+
+    async def add_reactions():
+        for i in range(c4board.BOARD_WIDTH):
+            await msg.add_reaction(
+                str(i) +
+                "\N{VARIATION SELECTOR-16}\N{COMBINING ENCLOSING KEYCAP}")
+
+    asyncio.create_task(add_reactions())
+
+    def check(payload):
+        if payload.message_id != msg.id:
+            return False
+        emoji = str(payload.emoji)
+        try:
+            return len(emoji) == 3 and int(emoji[0]) < c4board.BOARD_WIDTH
+        except ValueError:
+            return False
+
+    pending = {
+        asyncio.create_task(bot.wait_for("raw_reaction_add", check=check)),
+        asyncio.create_task(bot.wait_for("raw_reaction_remove", check=check))
+    }
+
+    while True:
+        done, pending = await asyncio.wait(pending,
+                                           timeout=300,
+                                           return_when=asyncio.FIRST_COMPLETED)
+        if not done:
+            break
+        for done_task in done:
+            payload = done_task.result()
+            move_result = board.move(int(str(payload.emoji)[0]))
+            if move_result != c4board.MoveResult.INVALID:
+                await msg.edit(content=board)
+                if move_result == c4board.MoveResult.YELLOW_WIN:
+                    await ctx.send("Yellow won!")
+                    break
+                if move_result == c4board.MoveResult.RED_WIN:
+                    await ctx.send("Red won!")
+                    break
+                if move_result == c4board.MoveResult.DRAW:
+                    await ctx.send("It's a draw!")
+                    break
+
+            if payload.event_type == "REACTION_ADD":
+                pending.add(
+                    asyncio.create_task(
+                        bot.wait_for("raw_reaction_add", check=check)))
+            else:
+                pending.add(
+                    asyncio.create_task(
+                        bot.wait_for("raw_reaction_remove", check=check)))
+    for pending_task in pending:
+        pending_task.cancel()
 
 
 @bot.event
