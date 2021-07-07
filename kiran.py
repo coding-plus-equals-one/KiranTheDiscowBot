@@ -388,7 +388,7 @@ async def cowsay_block(block):
 
 
 @bot.event
-async def on_command_error(ctx, error):
+async def on_error(ctx, error):
     """Send errors to the text channel."""
     await send_block(
         ctx, ''.join(
