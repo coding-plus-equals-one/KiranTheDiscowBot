@@ -405,6 +405,8 @@ async def c4(ctx):  # pylint: disable=invalid-name
     def check(payload):
         if payload.message_id != msg.id:
             return False
+        if payload.event_type == "REACTION_ADD" and payload.user_id == bot.user.id:
+            return False
         emoji = str(payload.emoji)
         try:
             return len(emoji) == 3 and int(emoji[0]) < c4board.BOARD_WIDTH
