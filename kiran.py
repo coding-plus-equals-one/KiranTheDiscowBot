@@ -1,16 +1,17 @@
-#!/usr/bin/env python3
+"""Kiran the Discow Bot."""
 
-import discord
-from discord.ext import commands
 import os
-import sympy
-from sympy.parsing import sympy_parser
 import traceback
-from dotenv import load_dotenv
 import re
-from gtts import gTTS
 import tempfile
 import subprocess
+import asyncio
+import discord
+from discord.ext import commands
+import sympy
+from sympy.parsing import sympy_parser
+from dotenv import load_dotenv
+from gtts import gTTS
 
 load_dotenv()
 
@@ -341,13 +342,12 @@ async def cowsay(ctx, *args):
     eyes               pony-smaller  www
     flaming-sheep      ren
     """
-    await send_block(
-        ctx,
-        subprocess.run(('cowsay', ) + args,
-                       stdout=subprocess.PIPE,
-                       stderr=subprocess.STDOUT,
-                       universal_newlines=True,
-                       check=True).stdout)
+    proc = await asyncio.create_subprocess_exec(
+        'cowsay',
+        *args,
+        stderr=subprocess.STDOUT,
+    )
+    await send_block(ctx, (await proc.communicate())[0].decode())
 
 
 @bot.command()
@@ -356,23 +356,20 @@ async def cowthink(ctx, *args):
 
     https://manpages.debian.org/buster/cowsay/cowsay.6.en.html
     """
-    await send_block(
-        ctx,
-        subprocess.run(('cowthink', ) + args,
-                       stdout=subprocess.PIPE,
-                       stderr=subprocess.STDOUT,
-                       universal_newlines=True,
-                       check=True).stdout)
+    proc = await asyncio.create_subprocess_exec(
+        'cowthink',
+        *args,
+        stderr=subprocess.STDOUT,
+    )
+    await send_block(ctx, (await proc.communicate())[0].decode())
 
 
-def cowsay_block(block):
+async def cowsay_block(block):
     """Wrap a block of text with cowsay."""
-    return subprocess.run(['cowsay', '-n'],
-                          input=block,
-                          stdout=subprocess.PIPE,
-                          stderr=subprocess.STDOUT,
-                          universal_newlines=True,
-                          check=True).stdout
+    proc = await asyncio.create_subprocess_exec('cowsay',
+                                                '-n',
+                                                stderr=subprocess.STDOUT)
+    return (await proc.communicate(block.encode()))[0].decode()
 
 
 @bot.command()
@@ -400,39 +397,43 @@ async def on_command_error(ctx, error):
                                        tb=error.__traceback__)))
 
 
+async def _bad_word_check(message):
+    if any(
+            bad_word.search(message.clean_content) is not None
+            for bad_word in BAD_WORDS):
+        shame_channel = message.channel
+        try:
+            for channel in message.guild.text_channels:
+                if SHAME_CHANNEL_PATTERN.fullmatch(channel.name):
+                    shame_channel = channel
+                    break
+        except AttributeError:
+            pass  # Message has no guild
+        await shame_channel.send('{} SAID A BAD WORD'.format(
+            message.author.display_name.upper()))
+
+
+async def _speak_muted(message):
+    if not isinstance(
+            message.channel,
+            discord.DMChannel) and 'muted' in message.channel.name.lower(
+            ) and message.author.voice and not message.content.startswith('!'):
+        await _joinvoice(message.guild.voice_client,
+                         message.author.voice.channel)
+        temp_file = tempfile.TemporaryFile()
+        tts = gTTS(message.author.display_name + ' said: ' +
+                   message.clean_content)
+        tts.write_to_fp(temp_file)
+        temp_file.seek(0)
+        source = discord.FFmpegPCMAudio(temp_file, pipe=True)
+        message.guild.voice_client.play(source)
+
+
 @bot.event
 async def on_message(message):
     """Check for bad words and speak things in the muted channel."""
-    try:
-        if any(
-                bad_word.search(message.clean_content) is not None
-                for bad_word in BAD_WORDS):
-            shame_channel = message.channel
-            try:
-                for channel in message.guild.text_channels:
-                    if SHAME_CHANNEL_PATTERN.fullmatch(channel.name):
-                        shame_channel = channel
-                        break
-            except AttributeError:
-                pass
-            await shame_channel.send('{} SAID A BAD WORD'.format(
-                message.author.display_name.upper()))
-        if not isinstance(
-                message.channel, discord.DMChannel
-        ) and 'muted' in message.channel.name.lower(
-        ) and message.author.voice and not message.content.startswith('!'):
-            await _joinvoice(message.guild.voice_client,
-                             message.author.voice.channel)
-            temp_file = tempfile.TemporaryFile()
-            tts = gTTS(message.author.display_name + ' said: ' +
-                       message.clean_content)
-            tts.write_to_fp(temp_file)
-            temp_file.seek(0)
-            source = discord.FFmpegPCMAudio(temp_file, pipe=True)
-            message.guild.voice_client.play(source)
-    except:
-        await send_block(message.channel, traceback.format_exc())
-    await bot.process_commands(message)
+    await asyncio.gather(_bad_word_check(message), _speak_muted(message),
+                         bot.process_commands(message))
 
 
 bot.run(os.environ['KIRAN_TOKEN'])
