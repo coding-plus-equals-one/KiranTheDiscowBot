@@ -418,37 +418,38 @@ async def c4(ctx):  # pylint: disable=invalid-name
         asyncio.create_task(bot.wait_for("raw_reaction_remove", check=check))
     }
 
-    while True:
-        done, pending = await asyncio.wait(pending,
-                                           timeout=300,
-                                           return_when=asyncio.FIRST_COMPLETED)
-        if not done:
-            break
-        for done_task in done:
-            payload = done_task.result()
-            move_result = board.move(int(str(payload.emoji)[0]))
-            if move_result != c4board.MoveResult.INVALID:
-                await msg.edit(content=board)
-                if move_result == c4board.MoveResult.YELLOW_WIN:
-                    await ctx.send("Yellow won!")
-                    break
-                if move_result == c4board.MoveResult.RED_WIN:
-                    await ctx.send("Red won!")
-                    break
-                if move_result == c4board.MoveResult.DRAW:
-                    await ctx.send("It's a draw!")
-                    break
+    try:
+        while True:
+            done, pending = await asyncio.wait(
+                pending, timeout=300, return_when=asyncio.FIRST_COMPLETED)
+            if not done:
+                return
+            for done_task in done:
+                payload = done_task.result()
+                move_result = board.move(int(str(payload.emoji)[0]))
+                if move_result != c4board.MoveResult.INVALID:
+                    await msg.edit(content=board)
+                    if move_result == c4board.MoveResult.YELLOW_WIN:
+                        await ctx.send("Yellow won!")
+                        return
+                    if move_result == c4board.MoveResult.RED_WIN:
+                        await ctx.send("Red won!")
+                        return
+                    if move_result == c4board.MoveResult.DRAW:
+                        await ctx.send("It's a draw!")
+                        return
 
-            if payload.event_type == "REACTION_ADD":
-                pending.add(
-                    asyncio.create_task(
-                        bot.wait_for("raw_reaction_add", check=check)))
-            else:
-                pending.add(
-                    asyncio.create_task(
-                        bot.wait_for("raw_reaction_remove", check=check)))
-    for pending_task in pending:
-        pending_task.cancel()
+                if payload.event_type == "REACTION_ADD":
+                    pending.add(
+                        asyncio.create_task(
+                            bot.wait_for("raw_reaction_add", check=check)))
+                else:
+                    pending.add(
+                        asyncio.create_task(
+                            bot.wait_for("raw_reaction_remove", check=check)))
+    finally:
+        for pending_task in pending:
+            pending_task.cancel()
 
 
 @bot.event
