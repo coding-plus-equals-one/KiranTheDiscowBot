@@ -409,7 +409,10 @@ async def c4(ctx):  # pylint: disable=invalid-name
             return False
         emoji = str(payload.emoji)
         try:
-            return len(emoji) == 3 and int(emoji[0]) < c4board.BOARD_WIDTH
+            return (
+                len(emoji) == 3 and int(emoji[0]) < c4board.BOARD_WIDTH
+                and emoji[1:]
+                == "\N{VARIATION SELECTOR-16}\N{COMBINING ENCLOSING KEYCAP}")
         except ValueError:
             return False
 
