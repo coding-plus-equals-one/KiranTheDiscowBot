@@ -96,7 +96,7 @@ class C4Board:
         for i, j in zip(range(column - 1, -1, -1), range(row - 1, -1, -1)):
             try:
                 if self.board[i][j] == self.board[column][row]:
-                    length = 1
+                    length += 1
                     if length >= WIN_LENGTH:
                         return True
                 else:
@@ -106,7 +106,7 @@ class C4Board:
         for i, j in zip(range(column + 1, BOARD_WIDTH), range(row + 1, BOARD_HEIGHT)):
             try:
                 if self.board[i][j] == self.board[column][row]:
-                    length = 1
+                    length += 1
                     if length >= WIN_LENGTH:
                         return True
                 else:
@@ -120,7 +120,7 @@ class C4Board:
         for i, j in zip(range(column - 1, -1, -1), range(row + 1, BOARD_HEIGHT)):
             try:
                 if self.board[i][j] == self.board[column][row]:
-                    length = 1
+                    length += 1
                     if length >= WIN_LENGTH:
                         return True
                 else:
@@ -130,7 +130,7 @@ class C4Board:
         for i, j in zip(range(column + 1, BOARD_WIDTH), range(row - 1, -1, -1)):
             try:
                 if self.board[i][j] == self.board[column][row]:
-                    length = 1
+                    length += 1
                     if length >= WIN_LENGTH:
                         return True
                 else:
