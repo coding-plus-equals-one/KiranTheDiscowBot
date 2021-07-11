@@ -175,7 +175,15 @@ class C4Board:
             return BLANK
 
     def __str__(self):
-        return "\n".join(
-            "".join(self._char_at(i, j) for j in range(BOARD_WIDTH))
-            for i in range(BOARD_HEIGHT - 1, -1, -1)
+        return (
+            "\n".join(
+                "".join(self._char_at(i, j) for j in range(BOARD_WIDTH))
+                for i in range(BOARD_HEIGHT - 1, -1, -1)
+            )
+            + "\n"
+            + "".join(
+                str(i) + "\N{VARIATION SELECTOR-16}\N{COMBINING ENCLOSING KEYCAP}"
+                for i in range(BOARD_WIDTH)
+            )
+            + (YELLOW_PIECE if self.turn == Color.YELLOW else RED_PIECE)
         )
