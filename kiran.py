@@ -503,8 +503,9 @@ async def on_message(message):
             await _joinvoice(message.guild.voice_client,
                              message.author.voice.channel)
             temp_file = tempfile.TemporaryFile()
-            tts = gTTS(message.author.display_name + ' said: ' +
-                       message.clean_content)
+            tts = gTTS(
+                re.split(r'\W+', message.author.display_name, maxsplit=1)[0] +
+                ' said: ' + message.clean_content)
             tts.write_to_fp(temp_file)
             temp_file.seek(0)
             source = discord.FFmpegPCMAudio(temp_file, pipe=True)
