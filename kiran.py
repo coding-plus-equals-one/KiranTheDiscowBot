@@ -1,18 +1,21 @@
 """Kiran the Discow Bot."""
 
-import os
-import traceback
-import re
-import tempfile
-import subprocess
 import asyncio
+import os
+import re
+import subprocess
+import tempfile
+import traceback
+
 import discord
 from discord.ext import commands
 # import sympy
 # from sympy.parsing import sympy_parser
 from dotenv import load_dotenv
 from gtts import gTTS
-import c4board
+
+import connectx
+from connectx import MoveResult
 
 load_dotenv()
 
@@ -391,11 +394,11 @@ async def cowsay_block(block):
 @bot.command()
 async def c4(ctx):  # pylint: disable=invalid-name
     """Play Four in a Row."""
-    board = c4board.C4Board()
+    board = connectx.ConnectX()
     msg = await ctx.send(board)
 
     async def add_reactions():
-        for i in range(c4board.BOARD_WIDTH):
+        for i in range(board.cols):
             await msg.add_reaction(
                 str(i) +
                 "\N{VARIATION SELECTOR-16}\N{COMBINING ENCLOSING KEYCAP}")
@@ -410,8 +413,7 @@ async def c4(ctx):  # pylint: disable=invalid-name
         emoji = str(payload.emoji)
         try:
             return (
-                len(emoji) == 3 and int(emoji[0]) < c4board.BOARD_WIDTH
-                and emoji[1:]
+                len(emoji) == 3 and int(emoji[0]) < board.cols and emoji[1:]
                 == "\N{VARIATION SELECTOR-16}\N{COMBINING ENCLOSING KEYCAP}")
         except ValueError:
             return False
@@ -429,16 +431,15 @@ async def c4(ctx):  # pylint: disable=invalid-name
                 return
             for done_task in done:
                 payload = done_task.result()
-                move_result = board.move(int(str(payload.emoji)[0]))
-                if move_result != c4board.MoveResult.INVALID:
+                player = board.player
+                move_result = board.step(int(str(payload.emoji)[0]))
+                if move_result != MoveResult.INVALID:
                     await msg.edit(content=board)
-                    if move_result == c4board.MoveResult.YELLOW_WIN:
-                        await ctx.send("Yellow won!")
+                    if move_result == MoveResult.WIN:
+                        await ctx.send("Yellow" if player == 1 else "Red" +
+                                       " won!")
                         return
-                    if move_result == c4board.MoveResult.RED_WIN:
-                        await ctx.send("Red won!")
-                        return
-                    if move_result == c4board.MoveResult.DRAW:
+                    if move_result == MoveResult.DRAW:
                         await ctx.send("It's a draw!")
                         return
 
