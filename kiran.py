@@ -18,21 +18,19 @@ import c4board
 
 load_dotenv()
 
-with open('bad_words.txt') as bad_words_file:
+with open("bad_words.txt") as bad_words_file:
     BAD_WORDS = [
-        re.compile(line, re.IGNORECASE)
-        for line in bad_words_file.read().splitlines()
+        re.compile(line, re.IGNORECASE) for line in bad_words_file.read().splitlines()
     ]
 
-SHAME_CHANNEL_PATTERN = re.compile(r'.*wall.*of.*shame.*',
-                                   re.DOTALL | re.IGNORECASE)
+SHAME_CHANNEL_PATTERN = re.compile(r".*wall.*of.*shame.*", re.DOTALL | re.IGNORECASE)
 
-discord.opus.load_opus('libopus.so.0')
+discord.opus.load_opus("libopus.so.0")
 
 intents = discord.Intents.default()
 intents.members = True
 
-bot = commands.Bot(intents=intents, command_prefix='!')
+bot = commands.Bot(intents=intents, command_prefix="!")
 
 
 async def send_block(destination, content):
@@ -50,7 +48,7 @@ async def send_block(destination, content):
 @bot.event
 async def on_ready():
     """Indicate that we have successfully logged in."""
-    print('Logged in as {0.user}'.format(bot))
+    print("Logged in as {0.user}".format(bot))
 
 
 tasks = {}
@@ -59,7 +57,7 @@ tasks = {}
 @bot.command()
 async def hello(ctx):
     """Say hello."""
-    await ctx.send(f'Hello, {ctx.author.display_name}!')
+    await ctx.send(f"Hello, {ctx.author.display_name}!")
 
 
 @bot.group()
@@ -73,21 +71,23 @@ async def task(ctx):
 async def add(ctx, *, new_task: commands.clean_content):
     """Add a new task."""
     tasks[ctx.guild].append(new_task)
-    await ctx.send('Added task ' + new_task)
+    await ctx.send("Added task " + new_task)
     if len(ctx.message.mentions) > 0:
-        await ctx.send(' '.join(user.mention
-                                for user in ctx.message.mentions) +
-                       ' You have a new task!')
+        await ctx.send(
+            " ".join(user.mention for user in ctx.message.mentions)
+            + " You have a new task!"
+        )
 
 
-@task.command(name='list')
+@task.command(name="list")
 async def list_(ctx):
     """List tasks."""
     if len(tasks[ctx.guild]) == 0:
-        await ctx.send('There are no tasks. Yay!')
+        await ctx.send("There are no tasks. Yay!")
     else:
-        await ctx.send('\n'.join(f'{i + 1}. {task}'
-                                 for i, task in enumerate(tasks[ctx.guild])))
+        await ctx.send(
+            "\n".join(f"{i + 1}. {task}" for i, task in enumerate(tasks[ctx.guild]))
+        )
 
 
 @task.command()
@@ -96,16 +96,16 @@ async def remove(ctx, task_index: int):
     task_index -= 1
     try:
         tsk = tasks[ctx.guild].pop(task_index)
-        await ctx.send('Deleted task ' + tsk)
+        await ctx.send("Deleted task " + tsk)
     except IndexError:
-        await ctx.send('No such task')
+        await ctx.send("No such task")
 
 
 @task.command()
 async def clear(ctx):
     """Remove all tasks."""
     tasks[ctx.guild].clear()
-    await ctx.send('Cleared tasks')
+    await ctx.send("Cleared tasks")
 
 
 @bot.command()
@@ -117,13 +117,13 @@ async def say(ctx, *, message):
 @bot.command()
 async def dance(ctx):
     """Send a dancing cow GIF."""
-    await ctx.send(file=discord.File('dance.gif'))
+    await ctx.send(file=discord.File("dance.gif"))
 
 
 @bot.command()
 async def skateboard(ctx):
     """Send a skateboarding cow GIF."""
-    await ctx.send(file=discord.File('skateboard.gif'))
+    await ctx.send(file=discord.File("skateboard.gif"))
 
 
 # @bot.command(name='sp')
@@ -152,8 +152,7 @@ async def _joinvoice(voice_client, channel):
 
 async def _speak(ctx, lang, tld, message):
     if not ctx.author.voice:
-        await ctx.send(
-            "You must be in a voice channel in order to use this command.")
+        await ctx.send("You must be in a voice channel in order to use this command.")
         return
     await _joinvoice(ctx.voice_client, ctx.author.voice.channel)
     temp_file = tempfile.TemporaryFile()
@@ -167,7 +166,7 @@ async def _speak(ctx, lang, tld, message):
 @bot.command()
 async def speak(ctx, *, message: commands.clean_content):
     """Speak the given message."""
-    await _speak(ctx, 'en', 'com', message)
+    await _speak(ctx, "en", "com", message)
 
 
 @bot.command()
@@ -176,7 +175,7 @@ async def speaklang(ctx, language, *, message: commands.clean_content):
 
     Use two-letter language codes from https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes.
     """
-    await _speak(ctx, language, 'com', message)
+    await _speak(ctx, language, "com", message)
 
 
 @bot.command()
@@ -185,12 +184,11 @@ async def speakaccent(ctx, tld, *, message: commands.clean_content):
 
     See https://gtts.readthedocs.io/en/latest/module.html#localized-accents for possible values.
     """
-    await _speak(ctx, 'en', tld, message)
+    await _speak(ctx, "en", tld, message)
 
 
 @bot.command()
-async def speaklangaccent(ctx, language, tld, *,
-                          message: commands.clean_content):
+async def speaklangaccent(ctx, language, tld, *, message: commands.clean_content):
     """Same as !speak but allows you to specify the language and accent.
 
     See the help for !speaklang and !speakaccent for more info.
@@ -198,7 +196,7 @@ async def speaklangaccent(ctx, language, tld, *,
     await _speak(ctx, language, tld, message)
 
 
-@bot.command(aliases=['dc'])
+@bot.command(aliases=["dc"])
 async def disconnect(ctx):
     """Disconnect from voice channel."""
     if ctx.voice_client is not None:
@@ -213,12 +211,12 @@ async def fun(ctx, victim: discord.Member = None):
     if not victim.voice:
         await ctx.send(
             "You must be in a voice channel in order to use this command."
-            if victim == ctx.author else
-            "The victim must be in a voice channel in order for this command to work."
+            if victim == ctx.author
+            else "The victim must be in a voice channel in order for this command to work."
         )
         return
     await _joinvoice(ctx.voice_client, victim.voice.channel)
-    source = discord.FFmpegOpusAudio('fun.opus', codec='copy')
+    source = discord.FFmpegOpusAudio("fun.opus", codec="copy")
     ctx.voice_client.play(source)
 
 
@@ -230,7 +228,7 @@ with open("cowsay_manual.txt") as cowsay_manual_file:
 async def cowsay(ctx, *args):
     """The original cowsay command."""
     proc = await asyncio.create_subprocess_exec(
-        'cowsay',
+        "cowsay",
         *args,
         stderr=subprocess.STDOUT,
     )
@@ -244,7 +242,7 @@ async def cowthink(ctx, *args):
     https://manpages.debian.org/buster/cowsay/cowsay.6.en.html
     """
     proc = await asyncio.create_subprocess_exec(
-        'cowthink',
+        "cowthink",
         *args,
         stderr=subprocess.STDOUT,
     )
@@ -253,9 +251,9 @@ async def cowthink(ctx, *args):
 
 async def cowsay_block(block):
     """Wrap a block of text with cowsay."""
-    proc = await asyncio.create_subprocess_exec('cowsay',
-                                                '-n',
-                                                stderr=subprocess.STDOUT)
+    proc = await asyncio.create_subprocess_exec(
+        "cowsay", "-n", stderr=subprocess.STDOUT
+    )
     return (await proc.communicate(block.encode()))[0].decode()
 
 
@@ -283,8 +281,8 @@ async def c4(ctx):  # pylint: disable=invalid-name
     async def add_reactions():
         for i in range(c4board.BOARD_WIDTH):
             await msg.add_reaction(
-                str(i) +
-                "\N{VARIATION SELECTOR-16}\N{COMBINING ENCLOSING KEYCAP}")
+                str(i) + "\N{VARIATION SELECTOR-16}\N{COMBINING ENCLOSING KEYCAP}"
+            )
 
     asyncio.create_task(add_reactions())
 
@@ -296,21 +294,24 @@ async def c4(ctx):  # pylint: disable=invalid-name
         emoji = str(payload.emoji)
         try:
             return (
-                len(emoji) == 3 and int(emoji[0]) < c4board.BOARD_WIDTH
+                len(emoji) == 3
+                and int(emoji[0]) < c4board.BOARD_WIDTH
                 and emoji[1:]
-                == "\N{VARIATION SELECTOR-16}\N{COMBINING ENCLOSING KEYCAP}")
+                == "\N{VARIATION SELECTOR-16}\N{COMBINING ENCLOSING KEYCAP}"
+            )
         except ValueError:
             return False
 
     pending = {
         asyncio.create_task(bot.wait_for("raw_reaction_add", check=check)),
-        asyncio.create_task(bot.wait_for("raw_reaction_remove", check=check))
+        asyncio.create_task(bot.wait_for("raw_reaction_remove", check=check)),
     }
 
     try:
         while True:
             done, pending = await asyncio.wait(
-                pending, timeout=300, return_when=asyncio.FIRST_COMPLETED)
+                pending, timeout=300, return_when=asyncio.FIRST_COMPLETED
+            )
             if not done:
                 return
             for done_task in done:
@@ -331,11 +332,15 @@ async def c4(ctx):  # pylint: disable=invalid-name
                 if payload.event_type == "REACTION_ADD":
                     pending.add(
                         asyncio.create_task(
-                            bot.wait_for("raw_reaction_add", check=check)))
+                            bot.wait_for("raw_reaction_add", check=check)
+                        )
+                    )
                 else:
                     pending.add(
                         asyncio.create_task(
-                            bot.wait_for("raw_reaction_remove", check=check)))
+                            bot.wait_for("raw_reaction_remove", check=check)
+                        )
+                    )
     finally:
         for pending_task in pending:
             pending_task.cancel()
@@ -345,29 +350,36 @@ async def c4(ctx):  # pylint: disable=invalid-name
 async def on_error(ctx, error):
     """Send errors to the text channel."""
     await send_block(
-        ctx, ''.join(
-            traceback.format_exception(etype=type(error),
-                                       value=error,
-                                       tb=error.__traceback__)))
+        ctx,
+        "".join(
+            traceback.format_exception(
+                etype=type(error), value=error, tb=error.__traceback__
+            )
+        ),
+    )
 
 
 @bot.event
 async def on_command_error(ctx, error):
     """Send command errors to the text channel."""
     await send_block(
-        ctx, ''.join(
-            traceback.format_exception(etype=type(error),
-                                       value=error,
-                                       tb=error.__traceback__)))
+        ctx,
+        "".join(
+            traceback.format_exception(
+                etype=type(error), value=error, tb=error.__traceback__
+            )
+        ),
+    )
 
 
 @bot.event
 async def on_message(message):
     """Check for bad words and speak things in the muted channel."""
+
     async def bad_word_check():
         if any(
-                bad_word.search(message.clean_content) is not None
-                for bad_word in BAD_WORDS):
+            bad_word.search(message.clean_content) is not None for bad_word in BAD_WORDS
+        ):
             shame_channel = message.channel
             try:
                 for channel in message.guild.text_channels:
@@ -376,27 +388,30 @@ async def on_message(message):
                         break
             except AttributeError:
                 pass  # Message has no guild
-            await shame_channel.send('{} SAID A BAD WORD'.format(
-                message.author.display_name.upper()))
+            await shame_channel.send(
+                "{} SAID A BAD WORD".format(message.author.display_name.upper())
+            )
 
     async def speak_muted():
-        if not isinstance(
-                message.channel, discord.DMChannel
-        ) and 'muted' in message.channel.name.lower(
-        ) and message.author.voice and not message.content.startswith('!'):
-            await _joinvoice(message.guild.voice_client,
-                             message.author.voice.channel)
+        if (
+            not isinstance(message.channel, discord.DMChannel)
+            and "muted" in message.channel.name.lower()
+            and message.author.voice
+            and not message.content.startswith("!")
+        ):
+            await _joinvoice(message.guild.voice_client, message.author.voice.channel)
             temp_file = tempfile.TemporaryFile()
             tts = gTTS(
-                re.split(r'\W+', message.author.display_name, maxsplit=1)[0] +
-                ' said: ' + message.clean_content)
+                re.split(r"\W+", message.author.display_name, maxsplit=1)[0]
+                + " said: "
+                + message.clean_content
+            )
             tts.write_to_fp(temp_file)
             temp_file.seek(0)
             source = discord.FFmpegPCMAudio(temp_file, pipe=True)
             message.guild.voice_client.play(source)
 
-    await asyncio.gather(bad_word_check(), speak_muted(),
-                         bot.process_commands(message))
+    await asyncio.gather(bad_word_check(), speak_muted(), bot.process_commands(message))
 
 
-bot.run(os.environ['KIRAN_TOKEN'])
+bot.run(os.environ["KIRAN_TOKEN"])
