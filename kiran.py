@@ -230,6 +230,7 @@ async def cowsay(ctx, *args):
     proc = await asyncio.create_subprocess_exec(
         "cowsay",
         *args,
+        stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
     )
     await send_block(ctx, (await proc.communicate())[0].decode())
@@ -244,6 +245,7 @@ async def cowthink(ctx, *args):
     proc = await asyncio.create_subprocess_exec(
         "cowthink",
         *args,
+        stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
     )
     await send_block(ctx, (await proc.communicate())[0].decode())
@@ -252,7 +254,7 @@ async def cowthink(ctx, *args):
 async def cowsay_block(block):
     """Wrap a block of text with cowsay."""
     proc = await asyncio.create_subprocess_exec(
-        "cowsay", "-n", stderr=subprocess.STDOUT
+        "cowsay", "-n", stdout=subprocess.PIPE, stderr=subprocess.STDOUT
     )
     return (await proc.communicate(block.encode()))[0].decode()
 
